@@ -12,7 +12,7 @@ interface User{
   userId: string
 }
 
-const users: User[] = [];
+const users = new Map<WebSocket, User>();
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -49,7 +49,7 @@ wss.on("connection", function connection(ws, req){
     return
   }
 
-  users.push({
+  users.set(ws, {
     userId,
     rooms: [],
     ws
@@ -70,7 +70,7 @@ wss.on("connection", function connection(ws, req){
 
 
     if(parsedData.type === "join_room"){
-      const user = users.find(x => x.ws === ws);
+      const user = users.get(ws);
       if(!user){
         console.error("User not connected")
         return
@@ -84,7 +84,7 @@ wss.on("connection", function connection(ws, req){
 
 
     if(parsedData.type === "leave_room"){
-      const user = users.find(x => x.ws === ws)
+      const user = users.get(ws)
       if(!user){
         return
       }
@@ -100,7 +100,7 @@ wss.on("connection", function connection(ws, req){
       const roomId = parsedData.roomId;
       const message = parsedData.message;
 
-      const user = users.find(x => x.ws === ws)
+      const user = users.get(ws)
 
       if(!user){
         ws.send(JSON.stringify({
@@ -143,5 +143,8 @@ wss.on("connection", function connection(ws, req){
         }))
       }
     }
+  })
+  ws.on("close", function disconnect(){
+    users.delete(ws)
   })
 })

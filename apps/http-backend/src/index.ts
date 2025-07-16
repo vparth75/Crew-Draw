@@ -157,4 +157,25 @@ app.get("/chats/:roomId", userMiddleware, async (req, res)=> {
   }
 })
 
+app.get("/rooms/:slug", userMiddleware, async (req, res)=> {
+  const slug = req.params.slug
+  try{
+
+    const room = await prismaClient.room.findFirst({
+      where: {
+        slug
+      }
+    })
+
+    res.json({
+      room
+    })
+    
+  } catch(e) {
+    res.json({
+      message: "Could not find room"
+    })
+  }
+})
+
 app.listen(3001)
