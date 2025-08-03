@@ -6,9 +6,11 @@ import 'dotenv/config';
 import { CreateRoomSchema, CreateUserSchema, SigninSchema } from "@repo/common/types"
 import { prismaClient } from "@repo/db/client"
 import bcrypt from "bcrypt";
+import cors from "cors";
 
 const app = express();
 app.use(express.json());
+app.use(cors())
 
 const JWT_SECRET = process.env.JWT_SECRET
 
@@ -134,8 +136,8 @@ app.post("/create-room", userMiddleware, async (req, res) => {
 
 app.get("/chats/:roomId", userMiddleware, async (req, res)=> {
   const roomId = req.params.roomId
+  
   try{
-
     const messages = await prismaClient.chat.findMany({
       where: {
         roomId: roomId
@@ -160,7 +162,6 @@ app.get("/chats/:roomId", userMiddleware, async (req, res)=> {
 app.get("/rooms/:slug", userMiddleware, async (req, res)=> {
   const slug = req.params.slug
   try{
-
     const room = await prismaClient.room.findFirst({
       where: {
         slug
@@ -170,7 +171,6 @@ app.get("/rooms/:slug", userMiddleware, async (req, res)=> {
     res.json({
       room
     })
-    
   } catch(e) {
     res.json({
       message: "Could not find room"
