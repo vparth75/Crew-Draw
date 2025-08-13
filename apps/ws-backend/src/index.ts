@@ -1,7 +1,6 @@
 import { WebSocketServer, WebSocket } from "ws";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
-// import { JWT_SECRET } from "@repo/backend-common/config"
 import { prismaClient } from "@repo/db/client";
 
 const wss = new WebSocketServer({ port: 8080 });
@@ -35,16 +34,20 @@ function checkUser(token: string): string | null {
 }
 
 async function checkRoom({ roomId, ws }: { roomId: string, ws: WebSocket}){
-  const roomExists = await prismaClient.room.findUnique({
-    where: {
-      id: roomId
+  try{
+    const roomExists = await prismaClient.room.findUnique({
+      where: {
+        id: roomId
+      }
+    })
+    if(!roomExists){
+      ws.send(JSON.stringify({
+        message: "Room does not exist"
+      }))
+      return;
     }
-  })
-  if(!roomExists){
-    ws.send(JSON.stringify({
-      message: "Room does not exist"
-    }))
-    return
+  } catch(e){
+    console.error('error checking room', e);
   }
 }
 

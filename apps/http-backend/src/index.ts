@@ -48,7 +48,7 @@ app.post("/signin", async(req, res) => {
 
   const parsedData = SigninSchema.safeParse(req.body)
   if(!parsedData.success){
-    res.json({
+    res.status(400).json({
       message: "Invalid inputs"
     });
     return;
@@ -84,7 +84,8 @@ app.post("/signin", async(req, res) => {
     }, JWT_SECRET as string)
 
     res.json({
-      token
+      token,
+      userId
     })
 
   } catch(e){

@@ -26,6 +26,9 @@ importers:
       axios:
         specifier: ^1.10.0
         version: 1.10.0
+      lucide-react:
+        specifier: ^0.539.0
+        version: 0.539.0(react@19.1.0)
       next:
         specifier: 15.4.5
         version: 15.4.5(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -2373,6 +2376,11 @@ packages:
   lru-cache@7.18.3:
     resolution: {integrity: sha512-jumlc0BIUrS3qJGgIkWZsyfAM7NCWiBcCDhnd+3NNM5KbBmLTgHVfWBcg6W+rLUsIpzpERPsvwUP7CckAQSOoA==}
     engines: {node: '>=12'}
+
+  lucide-react@0.539.0:
+    resolution: {integrity: sha512-VVISr+VF2krO91FeuCrm1rSOLACQUYVy7NQkzrOty52Y8TlTPcXcMdQFj9bYzBgXbWCiywlwSZ3Z8u6a+6bMlg==}
+    peerDependencies:
+      react: ^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0
 
   magic-string@0.30.17:
     resolution: {integrity: sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA==}
@@ -5566,6 +5574,10 @@ snapshots:
   lower-case@1.1.4: {}
 
   lru-cache@7.18.3: {}
+
+  lucide-react@0.539.0(react@19.1.0):
+    dependencies:
+      react: 19.1.0
 
   magic-string@0.30.17:
     dependencies:

@@ -1,15 +1,24 @@
 "use client"
-
 import { useEffect, useRef, useState } from "react";
-import { initDraw } from "../draw";
 import { WS_URL } from "../config";
+import IconButton from "./IconButton";
+import { Circle, Pencil, RectangleHorizontalIcon } from "lucide-react";
+import { Game } from "./Game";
 
-export function Canvas({ roomId }: { roomId: string }){
-  const canvasRef = useRef<HTMLCanvasElement>(null); 
+export type Tool = 'pencil' | 'rect' | 'circle';
+
+export function Canvas({ roomId, token }: {
+  roomId: string,
+  token: string
+}){
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
-  
+  const [selectedTool, setSelectedTool] = useState<Tool>("pencil");
+
+  const [game, setGame] = useState<Game>();
+
   useEffect(() => {
-    const ws = new WebSocket(`${WS_URL}?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI3OWM3ZTIxYS1lZDBmLTQ2MzYtYWQ1MS1mNWExMjAxYTNlNTkiLCJpYXQiOjE3NTM4MDkwMDl9.r5vbBYzOhqCfBOK43bezVRUPo9N_FdnXxgsGDTZmPWg`);
+    const ws = new WebSocket(`${WS_URL}?token=${token}`);
 
     ws.onopen = () => {
       setSocket(ws);
@@ -26,11 +35,15 @@ export function Canvas({ roomId }: { roomId: string }){
   }, [roomId]);
 
   useEffect(() => {
-    console.log(canvasRef.current)
+    game?.setTool(selectedTool);
+  }, [selectedTool, game]);
+
+  useEffect(() => {
     if(socket && canvasRef.current){
-      initDraw(canvasRef.current, roomId, socket);
+      const g = new Game(canvasRef.current, socket, roomId, token);
+      setGame(g);
     }
-  }, [socket, roomId])
+  }, [socket, roomId]);
 
   if(!socket){
     return <div>
@@ -38,8 +51,37 @@ export function Canvas({ roomId }: { roomId: string }){
     </div>
   }
 
-  return <div className="">
-    <canvas width={2000} height={2000} ref={canvasRef}></canvas>
-    hi there
+  return <div className="relative">
+    <TopBar selectedTool={selectedTool} setSelectedTool={setSelectedTool}></TopBar>
+    <canvas width={window.innerWidth} height={window.innerHeight} ref={canvasRef}></canvas>
+  </div>
+}
+
+function TopBar({
+  selectedTool,
+  setSelectedTool
+}: {
+  selectedTool: Tool,
+  setSelectedTool: (s: Tool) => void
+}){
+  return <div className="absolute text-white flex z-10 bg-neutral-800 rounded m-4">
+    <IconButton 
+      icon={<Pencil />}
+      onClick={() => {setSelectedTool("pencil")}}
+      activated = {selectedTool === "pencil"}
+    ></IconButton>
+
+    <IconButton 
+      icon={<RectangleHorizontalIcon />}
+      onClick={() => {setSelectedTool("rect")}}
+      activated = {selectedTool === "rect"}
+    ></IconButton>
+
+    <IconButton 
+      icon={<Circle />}
+      onClick={() => {setSelectedTool("circle")}}
+      activated = {selectedTool === "circle"}
+    ></IconButton>
+
   </div>
 }
